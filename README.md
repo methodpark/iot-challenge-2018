@@ -1,2 +1,6 @@
-# iot-challenge-2018
-This Repo accompanies the 2018 Internet of Things Challenge hosted by MethodPark. You can find code examples and useful links here!
+# IoT Challenge 2018
+This is the official Repository accompaning the 2018 IoT Challenge, hostet by MethodPark. - https://iot-challenge.rocks/
+
+In the code section, you can find examples on using the provided hardware, such as pycom boards or raspberry pis. 
+
+The Wiki gives an Overview over the devices available.
