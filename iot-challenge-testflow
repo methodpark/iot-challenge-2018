@@ -1,0 +1,236 @@
+[
+    {
+        "id": "8d1f7029.6f06b",
+        "type": "tab",
+        "label": "iot-challenge-testflow",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "87fdf0b8.804568",
+        "type": "debug",
+        "z": "8d1f7029.6f06b",
+        "name": "debugger",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 700,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "e70d7a4b.c6ece8",
+        "type": "ttn uplink",
+        "z": "8d1f7029.6f06b",
+        "name": "lopy-message",
+        "app": "e9656fd3.2efdd8",
+        "dev_id": "lopy4",
+        "field": "",
+        "x": 90,
+        "y": 420,
+        "wires": [
+            [
+                "ae2b8499.3a34b8"
+            ]
+        ]
+    },
+    {
+        "id": "ae2b8499.3a34b8",
+        "type": "function",
+        "z": "8d1f7029.6f06b",
+        "name": "string_to_number",
+        "func": "// casts payload string to number\nvar t = Number(msg.payload.temperature)\nmsg.payload.temperature = t\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 420,
+        "wires": [
+            [
+                "e1fdfe99.73dcd",
+                "d964651b.5f4ff8",
+                "be86ca08.ec678",
+                "87fdf0b8.804568"
+            ]
+        ]
+    },
+    {
+        "id": "4c50ba22.ac1e24",
+        "type": "ttn downlink",
+        "z": "8d1f7029.6f06b",
+        "name": "lopy-led",
+        "app": "e9656fd3.2efdd8",
+        "dev_id": "lopy4",
+        "port": "1",
+        "confirmed": false,
+        "schedule": "last",
+        "x": 1080,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "e1fdfe99.73dcd",
+        "type": "function",
+        "z": "8d1f7029.6f06b",
+        "name": "temperature warning",
+        "func": "// ttn is configured to translate the field \"led\"\n// from true/false to 00/01 in bytes\nlet temp = msg.payload.temperature;\nif(msg.payload.temperature > 25)\n{\n    return {\n      dev_id: msg.dev_id,\n      port: 1,\n      payload: {\n        led: true,\n      },\n    }\n}\nelse\n{\n    return {\n      dev_id: msg.dev_id,\n      port: 1,\n      payload: {\n        led: false,\n      },\n    }\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 740,
+        "y": 420,
+        "wires": [
+            [
+                "59e99455.214b34",
+                "4c50ba22.ac1e24"
+            ]
+        ]
+    },
+    {
+        "id": "59e99455.214b34",
+        "type": "debug",
+        "z": "8d1f7029.6f06b",
+        "name": "mqtt debugger",
+        "active": false,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1110,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "679fb4cd.ea922c",
+        "type": "comment",
+        "z": "8d1f7029.6f06b",
+        "name": "toggle led if temperature is higher than 25",
+        "info": "",
+        "x": 800,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "a34d8ae7.39b9d",
+        "type": "comment",
+        "z": "8d1f7029.6f06b",
+        "name": "receive downlink messages from ttn",
+        "info": "",
+        "x": 160,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "6cecca87.696b54",
+        "type": "comment",
+        "z": "8d1f7029.6f06b",
+        "name": "description",
+        "info": "this example flow implements basic backend-functionality\nit checks if the temparature is higher than 25 degrees and\nsends a mqtt back to ttn to toggle the led on lopy\n\n!! the encoder and decoder functions have to be set accordingly!!\n\n\nfunction Encoder(object, port) {\n  // Encode downlink messages sent as\n  // object to an array or buffer of bytes.\n  var bytes = [];\n  \n  // object.led muss true oder false sein\n  bytes[0] = object.led ? 1 : 0;\n\n  return bytes;\n}\n\nfunction Decoder(bytes, port) {\n  // Decode an uplink message from a buffer\n  // (array) of bytes to an object of fields.\n  var decoded = {\"temperature\": String.fromCharCode.apply(String, bytes)};\n\n  return decoded;\n}",
+        "x": 640,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "b503e027.771978",
+        "type": "comment",
+        "z": "8d1f7029.6f06b",
+        "name": "send led status back to ttn",
+        "info": "",
+        "x": 1130,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "d964651b.5f4ff8",
+        "type": "ui_gauge",
+        "z": "8d1f7029.6f06b",
+        "name": "",
+        "group": "560fc866.94bde8",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Temperature",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": "15",
+        "max": "40",
+        "colors": [
+            "#0426b0",
+            "#5bb72f",
+            "#ca3838"
+        ],
+        "seg1": "19",
+        "seg2": "30",
+        "x": 710,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "be86ca08.ec678",
+        "type": "ui_chart",
+        "z": "8d1f7029.6f06b",
+        "name": "",
+        "group": "560fc866.94bde8",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "bezier",
+        "nodata": "",
+        "dot": true,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "10",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 690,
+        "y": 740,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "e9656fd3.2efdd8",
+        "type": "ttn app",
+        "z": "",
+        "appId": "iot-challenge-test",
+        "accessKey": "ttn-account-v2.Sls8GXTZQCRsvp_tSclNw15i3fW6nrYmWJgrGb1VBiw",
+        "discovery": "discovery.thethingsnetwork.org:1900"
+    },
+    {
+        "id": "560fc866.94bde8",
+        "type": "ui_group",
+        "z": "",
+        "name": "Lopy",
+        "tab": "63ae5a8f.59c234",
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "63ae5a8f.59c234",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Home",
+        "icon": "dashboard"
+    }
+]
